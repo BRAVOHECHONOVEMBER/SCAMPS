@@ -1,97 +1,39 @@
-#ifndef CLINICMANAGER_H
-#define CLINICMANAGER_H
+#pragma once
 
-#include "../Model/ClinicDatabase.h"
-#include "../Model/PatientRecord.h"
-#include "../Model/Appointment.h"
-
-#include <memory>
-#include <string>
+#include "../model/ClinicDatabase.h"
 #include <queue>
 #include <stack>
+#include <string>
 
-namespace SCAPMS {
+namespace Controller {
 
-// Types of administrative operations
-enum class AdminOperationType {
-    PatientDeleted,
-    PatientModified,
-    AppointmentRemoved
-};
+enum OperationType { ADD_PATIENT, DELETE_PATIENT, SCHEDULE_APPOINTMENT };
 
-// Stores information needed to undo an operation
 struct AdminOperation {
-
-    AdminOperationType type;
-
-    std::shared_ptr<PatientRecord> patient;
-
-    std::string previousName;
-    int previousAge = 0;
-    std::string previousContact;
-
-    std::shared_ptr<Appointment> appointment;
+    OperationType type;
+    Model::PatientRecord* patientCopy;
+    Model::Appointment appointment;
 };
 
 class ClinicManager {
-
 private:
-
-    // Patient database
-    ClinicDatabase database;
-
-    // Queue for waiting patients
-    std::queue<std::shared_ptr<PatientRecord>> waitingPatients;
-
-    // Stack for undo operations
+    Model::ClinicDatabase database;
+    std::queue<Model::PatientRecord*> waitingQueue;
     std::stack<AdminOperation> undoStack;
 
 public:
+    ClinicManager() = default;
 
-    // Constructor
-    ClinicManager();
+    Model::ClinicDatabase& getDatabase() { return database; }
+    std::queue<Model::PatientRecord*>& getWaitingQueue() { return waitingQueue; }
 
-    // Patient management
-    bool registerPatient(std::shared_ptr<PatientRecord> patient);
+    void registerPatient(Model::PatientRecord* patient);
+    void deletePatient(const std::string& patientID);
+    
+    void enqueuePatient(Model::PatientRecord* patient);
+    Model::PatientRecord* dequeuePatient();
 
-    bool removePatient(std::string patientID);
-
-    std::shared_ptr<PatientRecord> findPatient(std::string patientID) const;
-
-    void displayPatients() const;
-
-    int getTotalPatients() const;
-
-    // Access the database
-    ClinicDatabase& getDatabase();
-
-    // Waiting queue operations
-    void addToWaitingQueue(std::shared_ptr<PatientRecord> patient);
-
-    std::shared_ptr<PatientRecord> getNextWaitingPatient();
-
-    bool isWaitingQueueEmpty() const;
-
-    // Record administrative operations
-    void recordPatientDeletion(std::shared_ptr<PatientRecord> patient);
-
-    void recordPatientModification(
-        std::shared_ptr<PatientRecord> patient,
-        std::string oldName,
-        int oldAge,
-        std::string oldContact
-    );
-
-    void recordAppointmentRemoval(
-        std::shared_ptr<PatientRecord> patient,
-        const Appointment& appointment
-    );
-
-    // Undo the most recent administrative operation
-    bool undoLastOperation();
-
+    void undoLastOperation();
 };
 
-}
-
-#endif
+} // namespace Controller

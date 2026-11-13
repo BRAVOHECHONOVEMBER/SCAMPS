@@ -1,41 +1,32 @@
-#ifndef PATIENTRECORD_H
-#define PATIENTRECORD_H
+#pragma once
 
 #include <string>
 
-namespace SCAPMS {
+namespace Model {
 
 class PatientRecord {
+protected:
+    std::string patientID;
+    std::string name;
+    int age;
+    std::string contactInfo;
 
-    protected:
-        std::string patientID;
-        std::string name;
-        int age;
-        std::string contact;
+public:
+    PatientRecord(const std::string& id, const std::string& name, int age, const std::string& contact);
+    virtual ~PatientRecord() = default;
 
-    public:
+    virtual std::string getPatientType() const = 0;
+    virtual void displayDetails() const = 0;
 
-        PatientRecord(std::string id, std::string patientName, int patientAge, std::string patientContact);
+    std::string getPatientID() const { return patientID; }
+    std::string getName() const { return name; }
+    int getAge() const { return age; }
+    std::string getContactInfo() const { return contactInfo; }
 
-        virtual ~PatientRecord();
+    void setPatientID(const std::string& id);
+    void setName(const std::string& n);
+    void setAge(int a);
+    void setContactInfo(const std::string& c);
+};
 
-        // Getters
-        std::string getPatientID() const;
-        std::string getName() const;
-        int getAge() const;
-        std::string getContact() const;
-
-        // Setters
-        void setName(std::string newName);
-        void setAge(int newAge);
-        void setContact(std::string newContact);
-
-        // Pure virtual functions
-        virtual std::string getPatientType() const = 0;
-        virtual void displaySummary() const = 0;
-
-    };
-
-}
-
-#endif
+} // namespace Model

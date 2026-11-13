@@ -1,42 +1,21 @@
-#ifndef GENERALPATIENT_H
-#define GENERALPATIENT_H
+#pragma once
 
 #include "PatientRecord.h"
-#include "Appointable.h"
-#include "Appointment.h"
+#include <string>
 
-#include <vector>
+namespace Model {
 
-namespace SCAPMS {
+class GeneralPatient : public PatientRecord {
+private:
+    std::string primaryPhysician;
 
-    class GeneralPatient : public PatientRecord, public Appointable {
+public:
+    GeneralPatient(const std::string& id, const std::string& name, int age, const std::string& contact, const std::string& physician = "Dr. Smith");
 
-        private:
+    std::string getPatientType() const override;
+    void displayDetails() const override;
 
-        std::vector<Appointment> appointments;
+    std::string getPrimaryPhysician() const;
+};
 
-        public:
-
-        // Constructor
-        GeneralPatient(std::string id, std::string patientName,
-                   int patientAge, std::string patientContact);
-
-        // Implementing PatientRecord's pure virtual functions
-        std::string getPatientType() const override;
-        void displaySummary() const override;
-
-        // Implementing Appointable's pure virtual functions
-        bool scheduleAppointment(
-            const Appointment& appointment) override;
-
-        bool cancelAppointment(
-        std::string appointmentID) override;
-
-        // Retrieve appointments
-        const std::vector<Appointment>& getAppointments() const;
-
-    };
-
-}
-
-#endif  
+} // namespace Model

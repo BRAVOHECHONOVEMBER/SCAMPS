@@ -1,31 +1,28 @@
-#ifndef APPOINTABLE_H
-#define APPOINTABLE_H
+#pragma once
 
 #include <string>
 
-namespace SCAPMS {
-    //Declare the Appointment class to avoid circular dependency
-    class Appointment;
+namespace Model {
 
-    class Appointable {
+class Appointment {
+private:
+    std::string appointmentID;
+    std::string patientID;
+    std::string date;
+    std::string time;
+    std::string status;
 
-        public:
+public:
+    Appointment(const std::string& appID, const std::string& pID, const std::string& d, const std::string& t, const std::string& s = "Scheduled")
+        : appointmentID(appID), patientID(pID), date(d), time(t), status(s) {}
 
-        // Virtual destructor
-        virtual ~Appointable() {}
+    std::string getAppointmentID() const { return appointmentID; }
+    std::string getPatientID() const { return patientID; }
+    std::string getDate() const { return date; }
+    std::string getTime() const { return time; }
+    std::string getStatus() const { return status; }
 
-        // Schedule an appointment
-        virtual bool scheduleAppointment(
-            const Appointment& appointment
-        ) = 0;
+    void setStatus(const std::string& newStatus) { status = newStatus; }
+};
 
-        // Cancel an appointment
-        virtual bool cancelAppointment(
-            std::string appointmentID
-        ) = 0;
-
-    };
-
-}
-
-#endif
+} // namespace Model

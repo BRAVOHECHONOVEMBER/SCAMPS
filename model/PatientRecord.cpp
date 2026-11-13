@@ -1,76 +1,42 @@
 #include "PatientRecord.h"
 #include "ClinicException.h"
+#include <iostream>
 
-using namespace std;
+namespace Model {
 
-namespace SCAPMS {
-
-    // Constructor
-    PatientRecord::PatientRecord(string id, string patientName,
-                             int patientAge, string patientContact)
-        : patientID(id),
-        name(patientName),
-        age(patientAge),
-        contact(patientContact) {
-
-        if (patientID.empty() || name.empty() || contact.empty()) {
-            throw ClinicException("Patient information cannot be empty.");
-        }
-
-        if (age <= 0) {
-            throw ClinicException("Patient's age must be greater than zero.");
-        }
+PatientRecord::PatientRecord(const std::string& id, const std::string& name, int age, const std::string& contact)
+    : patientID(id), name(name), age(age), contactInfo(contact) {
+    if (id.empty()) {
+        throw Utils::ClinicException("Patient ID cannot be empty.");
     }
-
-    // Destructor
-    PatientRecord::~PatientRecord() {
+    if (age <= 0 || age > 120) {
+        throw Utils::ClinicException("Invalid patient age provided.");
+    }
 }
 
-    // Getters
-
-    string PatientRecord::getPatientID() const {
-        return patientID;
+void PatientRecord::setPatientID(const std::string& id) {
+    if (id.empty()) {
+        throw Utils::ClinicException("Patient ID cannot be empty.");
     }
-
-    string PatientRecord::getName() const {
-        return name;
-    }
-
-    int PatientRecord::getAge() const {
-        return age;
-    }
-
-    string PatientRecord::getContact() const {
-        return contact;
-    }
-
-    // Setters
-
-    void PatientRecord::setName(string newName) {
-
-        if (newName.empty()) {
-            throw ClinicException("Patient name cannot be empty.");
-        }
-
-        name = newName;
-    }
-
-    void PatientRecord::setAge(int newAge) {
-
-        if (newAge <= 0) {
-            throw ClinicException("Patient age must be greater than zero.");
-        }
-
-        age = newAge;
-    }
-
-    void PatientRecord::setContact(string newContact) {
-
-        if (newContact.empty()) {
-            throw ClinicException("Patient contact cannot be empty.");
-        }
-
-    contact = newContact;
+    patientID = id;
 }
 
+void PatientRecord::setName(const std::string& n) {
+    if (n.empty()) {
+        throw Utils::ClinicException("Patient name cannot be empty.");
+    }
+    name = n;
 }
+
+void PatientRecord::setAge(int a) {
+    if (a <= 0 || a > 120) {
+        throw Utils::ClinicException("Age must be between 1 and 120.");
+    }
+    age = a;
+}
+
+void PatientRecord::setContactInfo(const std::string& c) {
+    contactInfo = c;
+}
+
+} // namespace Model

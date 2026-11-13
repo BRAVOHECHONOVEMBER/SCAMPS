@@ -1,41 +1,21 @@
-#ifndef FOLLOWUPPATIENT_H
-#define FOLLOWUPPATIENT_H
+#pragma once
 
 #include "PatientRecord.h"
-#include "Appointable.h"
-#include "Appointment.h"
-#include <vector>
+#include <string>
 
-namespace SCAPMS {
+namespace Model {
 
-    class FollowUpPatient : public PatientRecord, public Appointable {
+class FollowUpPatient : public PatientRecord {
+private:
+    std::string previousVisitDate;
 
-        private:
-        std::vector<Appointment> appointments;
-        std::string previousVisitDate;
+public:
+    FollowUpPatient(const std::string& id, const std::string& name, int age, const std::string& contact, const std::string& lastVisit = "2026-01-01");
 
-        public:
+    std::string getPatientType() const override;
+    void displayDetails() const override;
 
-        FollowUpPatient(std::string id, std::string patientName,
-                    int patientAge, std::string patientContact,
-                    std::string lastVisitDate);
+    std::string getPreviousVisitDate() const;
+};
 
-        std::string getPatientType() const override;
-
-        void displaySummary() const override;
-
-        bool scheduleAppointment(const Appointment& appointment) override;
-
-        bool cancelAppointment(std::string appointmentID) override;
-
-        std::string getPreviousVisitDate() const;
-
-        void setPreviousVisitDate(std::string newDate);
-
-        const std::vector<Appointment>& getAppointments() const;
-
-    };
-
-}
-
-#endif
+} // namespace Model

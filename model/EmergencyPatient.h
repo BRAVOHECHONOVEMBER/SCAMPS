@@ -1,51 +1,21 @@
-#ifndef EMERGENCYPATIENT_H
-#define EMERGENCYPATIENT_H
+#pragma once
 
 #include "PatientRecord.h"
-#include "Appointable.h"
-#include "Appointment.h"
-
-#include <vector>
 #include <string>
 
-namespace SCAPMS {
+namespace Model {
 
-    class EmergencyPatient : public PatientRecord, public Appointable {
+class EmergencyPatient : public PatientRecord {
+private:
+    int severityLevel; // 1 (High) to 5 (Low)
 
-        private:
+public:
+    EmergencyPatient(const std::string& id, const std::string& name, int age, const std::string& contact, int severity = 1);
 
-        int urgencyLevel;
+    std::string getPatientType() const override;
+    void displayDetails() const override;
 
-        std::vector<Appointment> appointments;
+    int getSeverityLevel() const;
+};
 
-        public:
-
-        // Constructor
-        EmergencyPatient(std::string id,
-                     std::string patientName,
-                     int patientAge,
-                     std::string patientContact,
-                     int urgency);
-
-        // Implements PatientRecord's pure virtual functions
-        std::string getPatientType() const override;
-        void displaySummary() const override;
-
-        // Implements Appointable's pure virtual functions
-        bool scheduleAppointment(
-            const Appointment& appointment) override;
-
-        bool cancelAppointment(
-            std::string appointmentID) override;
-
-        // Urgency level getter
-        int getUrgencyLevel() const;
-
-        // Returns the patient's appointments
-        const std::vector<Appointment>& getAppointments() const;
-
-    };
-
-}
-
-#endif
+} // namespace Model

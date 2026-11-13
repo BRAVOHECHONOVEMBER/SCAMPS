@@ -1,41 +1,45 @@
 #include "ClinicManager.h"
 
-using namespace std;
+namespace Controller {
 
-namespace SCAPMS {
-
-    // Constructor
-    ClinicManager::ClinicManager() {
-    }
-
-    // Register a patient
-    bool ClinicManager::registerPatient(shared_ptr<PatientRecord> patient) {
-        return database.addPatient(patient);
-    }
-
-    // Remove a patient
-    bool ClinicManager::removePatient(string patientID) {
-        return database.removePatient(patientID);
-    }
-
-    // Find a patient
-    shared_ptr<PatientRecord> ClinicManager::findPatient(string patientID) const {
-        return database.findPatient(patientID);
-    }
-
-    // Display all patients
-    void ClinicManager::displayPatients() const {
-        database.displayAllPatients();
-    }
-
-    // Get total number of patients
-    int ClinicManager::getTotalPatients() const {
-        return database.getPatientCount();
-    }
-
-    // Access the database
-    ClinicDatabase& ClinicManager::getDatabase() {
-        return database;
-    }
-
+void ClinicManager::registerPatient(Model::PatientRecord* patient) {
+    database.addPatient(patient);
+    AdminOperation op{ADD_PATIENT, patient, Model::Appointment("", "", "", "")};
+    undoStack.push(op);
 }
+
+void ClinicManager::deletePatient(const std::string& patientID) {
+    Model::PatientRecord* p = database.findPatientByID(patientID);
+    if (p) {
+        AdminOperation op{DELETE_PATIENT, p, Model::Appointment("", "", "", "")};
+        undoStack.push(op);
+        database.deletePatient(patientID);
+    }
+}
+
+void ClinicManager::enqueuePatient(Model::PatientRecord* patient) {
+    if (patient) {
+        waitingQueue.push(patient);
+    }
+}
+
+Model::PatientRecord* ClinicManager::dequeuePatient() {
+    if (waitingQueue.empty()) return nullptr;
+    Model::PatientRecord* next = waitingQueue.front();
+    waitingQueue.pop();
+    return next;
+}
+
+void ClinicManager::undoLastOperation() {
+    if (undoStack.empty()) return;
+    AdminOperation lastOp = undoStack.top();
+    undoStack.pop();
+
+    if (lastOp.type == ADD_PATIENT) {
+        if (lastOp.patientCopy) {
+            database.deletePatient(lastOp.patientCopy->getPatientID());
+        }
+    }
+}
+
+} // namespace Controller

@@ -1,82 +1,77 @@
 #include "ClinicDatabase.h"
-#include "../Utils/ClinicException.h"
-#include <iostream>
+#include <algorithm>
 
-using namespace std;
+namespace Model {
 
-namespace SCAPMS {
-
-    // Constructor
-    ClinicDatabase::ClinicDatabase() {
+ClinicDatabase::ClinicDatabase() : cacheCount(0) {
+    for (int i = 0; i < CACHE_SIZE; ++i) {
+        recentPatientsCache[i] = nullptr;
     }
-
-    // Add a patient
-    bool ClinicDatabase::addPatient(shared_ptr<PatientRecord> patient) {
-
-        if (patient == nullptr) {
-            throw ClinicException("Invalid patient record.");
-        }
-
-        // Check if the patient ID already exists
-        for (const auto& existingPatient : patients) {
-
-            if (existingPatient->getPatientID() == patient->getPatientID()) {
-                throw ClinicException("Patient ID already exists.");
-            }
-        }
-
-        patients.push_back(patient);
-        return true;
-    }
-
-    // Remove a patient using patient ID
-    bool ClinicDatabase::removePatient(string patientID) {
-
-        for (auto it = patients.begin(); it != patients.end(); ++it) {
-
-            if ((*it)->getPatientID() == patientID) {
-                patients.erase(it);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    // Find a patient using patient ID
-    shared_ptr<PatientRecord> ClinicDatabase::findPatient(string patientID) const {
-
-        for (const auto& patient : patients) {
-
-            if (patient->getPatientID() == patientID) {
-                return patient;
-            }
-        }
-
-        return nullptr;
-    }
-
-    // Display all patients
-    void ClinicDatabase::displayAllPatients() const {
-
-        if (patients.empty()) {
-            cout << "No patients registered.\n";
-            return;
-        }
-
-        for (const auto& patient : patients) {
-            patient->displaySummary();
-        }
-    }
-
-    // Get total number of patients
-    int ClinicDatabase::getPatientCount() const {
-        return static_cast<int>(patients.size());
-    }
-
-    // Get all patient records
-    const vector<shared_ptr<PatientRecord>>& ClinicDatabase::getPatients() const {
-        return patients;
-    }
-
 }
+
+ClinicDatabase::~ClinicDatabase() {
+    for (auto p : patients) {
+        delete p;
+    }
+    patients.clear();
+}
+
+void ClinicDatabase::addPatient(PatientRecord* patient) {
+    patients.push_back(patient);
+    updateRecentCache(patient);
+}
+
+void ClinicDatabase::deletePatient(const std::string& patientID) {
+    auto it = std::remove_if(patients.begin(), patients.end(), [&](PatientRecord* p) {
+        if (p->getPatientID() == patientID) {
+            delete p;
+            return true;
+        }
+        return false;
+    });
+    patients.erase(it, patients.end());
+}
+
+PatientRecord* ClinicDatabase::findPatientByID(const std::string& patientID) {
+    // Search cache first
+    for (int i = 0; i < cacheCount; ++i) {
+        if (recentPatientsCache[i] && recentPatientsCache[i]->getPatientID() == patientID) {
+            return recentPatientsCache[i];
+        }
+    }
+    // Search main vector
+    for (auto p : patients) {
+        if (p->getPatientID() == patientID) {
+            updateRecentCache(p);
+            return p;
+        }
+    }
+    return nullptr;
+}
+
+void ClinicDatabase::addAppointment(const Appointment& app) {
+    appointments.push_back(app);
+}
+
+void ClinicDatabase::cancelAppointment(const std::string& appID) {
+    for (auto& app : appointments) {
+        if (app.getAppointmentID() == appID) {
+            app.setStatus("Cancelled");
+            break;
+        }
+    }
+}
+
+void ClinicDatabase::updateRecentCache(PatientRecord* patient) {
+    if (cacheCount < CACHE_SIZE) {
+        recentPatientsCache[cacheCount++] = patient;
+    } else {
+        // Shift left
+        for (int i = 0; i < CACHE_SIZE - 1; ++i) {
+            recentPatientsCache[i] = recentPatientsCache[i + 1];
+        }
+        recentPatientsCache[CACHE_SIZE - 1] = patient;
+    }
+}
+
+} // namespace Model

@@ -10,10 +10,41 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable(SCAMPS
+set(SOURCES
     main.cpp
-    gui/MainWindow.h
+    model/PatientRecord.cpp
+    model/GeneralPatient.cpp
+    model/EmergencyPatient.cpp
+    model/FollowUpPatient.cpp
+    model/Appointment.cpp
+    model/ClinicDatabase.cpp
+    controller/ClinicManager.cpp
+    controller/SearchEngine.cpp
     gui/MainWindow.cpp
+)
+
+set(HEADERS
+    model/PatientRecord.h
+    model/GeneralPatient.h
+    model/EmergencyPatient.h
+    model/FollowUpPatient.h
+    model/Appointment.h
+    model/ClinicDatabase.h
+    controller/ClinicManager.h
+    controller/SearchEngine.h
+    gui/MainWindow.h
+    utils/ClinicException.h
+)
+
+add_executable(SCAMPS ${SOURCES} ${HEADERS})
+
+# Tells the compiler where to find headers inside subfolders
+target_include_directories(SCAMPS PRIVATE
+    .
+    model
+    controller
+    gui
+    utils
 )
 
 target_link_libraries(SCAMPS PRIVATE Qt6::Widgets)
