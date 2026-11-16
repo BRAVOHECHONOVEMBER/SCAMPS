@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "AppointmentPanel.h"
 #include "../model/GeneralPatient.h"
 #include "../model/EmergencyPatient.h"
 #include "../model/FollowUpPatient.h"
@@ -76,8 +77,8 @@ void MainWindow::setupPatientTab(QWidget *tab) {
 }
 
 void MainWindow::setupAppointmentTab(QWidget *tab) {
-    QVBoxLayout *layout = new QVBoxLayout(tab);
-    layout->addWidget(new QLabel("Appointment Scheduling Dashboard"));
+    auto *layout = new QVBoxLayout(tab);
+    layout->addWidget(new AppointmentPanel(clinicManager.getDatabase(), tab));
 }
 
 void MainWindow::setupQueueTab(QWidget *tab) {

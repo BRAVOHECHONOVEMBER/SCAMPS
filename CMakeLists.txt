@@ -23,6 +23,7 @@ set(SOURCES
     controller/SearchEngine.cpp
     gui/MainWindow.cpp
     gui/PatientPanel.cpp
+    gui/AppointmentPanel.cpp
     utils/IDGenerator.cpp
 )
 
@@ -38,6 +39,7 @@ set(HEADERS
     controller/SearchEngine.h
     gui/MainWindow.h
     gui/PatientPanel.h
+    gui/AppointmentPanel.h
     utils/ClinicException.h
     utils/IDGenerator.h
 )
