@@ -19,8 +19,11 @@ set(SOURCES
     model/Appointment.cpp
     model/ClinicDatabase.cpp
     controller/ClinicManager.cpp
+    controller/AppointmentController.cpp
     controller/SearchEngine.cpp
     gui/MainWindow.cpp
+    gui/PatientPanel.cpp
+    utils/IDGenerator.cpp
 )
 
 set(HEADERS
@@ -31,14 +34,16 @@ set(HEADERS
     model/Appointment.h
     model/ClinicDatabase.h
     controller/ClinicManager.h
+    controller/AppointmentController.h
     controller/SearchEngine.h
     gui/MainWindow.h
+    gui/PatientPanel.h
     utils/ClinicException.h
+    utils/IDGenerator.h
 )
 
 add_executable(SCAMPS ${SOURCES} ${HEADERS})
 
-# Tells the compiler where to find headers inside subfolders
 target_include_directories(SCAMPS PRIVATE
     .
     model
